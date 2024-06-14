@@ -1,0 +1,20 @@
+{
+  "name": "cmdkit",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "commandkit dev",
+    "build": "commandkit build",
+    "start": "commandkit start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^5.15.0",
+    "commandkit": "^0.1.10",
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5"
+  }
+}
