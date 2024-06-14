@@ -6,10 +6,12 @@ export const data: CommandData = {
     description: "Connect your Minecraft account to discord",
     options: [
         {
-            name: "username",
-            description: "Your user",
+            name: "code",
+            description: "The code provided to you for verification",
             type: ApplicationCommandOptionType.String,
             required: true
         }
     ]
 }
+
+export const run = async ({ interaction }: SlashCommandProps) => {};

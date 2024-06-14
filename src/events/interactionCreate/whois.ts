@@ -1,23 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-
-interface Response {
-  id: string;
-}
-
-interface ProfileInt {
-  id: string;
-  name: string;
-  properties: [
-    {
-      name: string;
-      value: string;
-    }
-  ];
-  profileActions?: string[];
-  timeTaken?: number;
-  textureDecoded?: string;
-  avatar?: string;
-}
+import { decodeBase64 } from "../../lib/utils";
+import { ProfileInt, Response } from "../../lib/types";
 
 export default async function whoisCommand(
   interaction: ChatInputCommandInteraction
@@ -25,10 +8,6 @@ export default async function whoisCommand(
   const { commandName, options } = interaction;
 
   if (commandName !== "whois") return;
-
-  function decodeBase64(base64: string): string {
-    return Buffer.from(base64, "base64").toString("utf-8");
-  }
 
   async function getPlayerUUID(username: string): Promise<string | undefined> {
     const url = `https://api.mojang.com/users/profiles/minecraft/${username}`;

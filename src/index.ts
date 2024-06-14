@@ -21,6 +21,7 @@ new CommandKit({
   client,
   eventsPath: join(__dirname, 'events'),
   commandsPath: join(__dirname, 'commands'),
+  bulkRegister: true,
 });
 
 client.login(process.env.TOKEN);

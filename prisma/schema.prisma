@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id            Int      @id
+  id            String   @id
   createdAt     DateTime @default(now())
   discordName   String?
   minecraftName String?
