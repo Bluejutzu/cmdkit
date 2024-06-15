@@ -13,10 +13,16 @@
   "type": "module",
   "dependencies": {
     "@prisma/client": "^5.15.0",
+    "axios": "^1.7.2",
     "commandkit": "^0.1.10",
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
     "ioredis": "^5.4.1",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.6",
+    "@types/uuid": "^9.0.8"
   }
 }

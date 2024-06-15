@@ -6,7 +6,6 @@ export default async function whoisCommand(
   interaction: ChatInputCommandInteraction
 ) {
   const { commandName, options } = interaction;
-
   if (commandName !== "whois") return;
 
   async function getPlayerUUID(username: string): Promise<string | undefined> {

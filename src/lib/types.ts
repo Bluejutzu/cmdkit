@@ -25,4 +25,15 @@ interface ProfileInt {
   };
 }
 
-export { ProfileInt, Response };
+interface User {
+  id: string;
+  uuid: string;
+  createdAt: Date;
+  discordName: string;
+  minecraftName: string;
+  role: string;
+  token: string;
+  code: string;
+}
+
+export { ProfileInt, Response, User };

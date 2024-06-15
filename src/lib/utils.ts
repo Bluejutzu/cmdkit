@@ -1,3 +1,4 @@
+import pool from "../db";
 import { ProfileInt, Response } from "./types";
 
 export function decodeBase64(base64: string): string {
@@ -7,11 +8,13 @@ export async function generateCode(): Promise<string> {
   const min = 100000;
   const max = 999999;
   const code = Math.floor(Math.random() * (max - min + 1)) + min;
-  
+
   return code.toString();
 }
 
-export async function getPlayerUUID(username: string): Promise<string | undefined> {
+export async function getPlayerUUID(
+  username: string
+): Promise<string | undefined> {
   const url = `https://api.mojang.com/users/profiles/minecraft/${username}`;
   try {
     const response = await fetch(url);
@@ -41,6 +44,10 @@ export async function getPlayerProfile(
   }
 }
 
+export function timeout(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function main(username: string | undefined) {
   const startTime = new Date().getTime();
   let profile: ProfileInt | undefined = undefined;
@@ -58,7 +65,7 @@ export async function main(username: string | undefined) {
           const textureData = JSON.parse(decodedValue);
           profile.textureDecoded = textureData.textures.SKIN.url;
 
-          const avatarUrl = `https://crafthead.net/avatar/${profile.id}`;
+          const avatarUrl = `https://crafthead.net/avatar/${fetchedUUID}`;
           profile.avatar = avatarUrl;
         }
 
@@ -67,6 +74,10 @@ export async function main(username: string | undefined) {
         console.log(`Time taken: ${timeTaken} ms`);
         profile.timeTaken = timeTaken;
       }
+      await pool.query(
+        "INSERT INTO users (id, uuid, minecraft_name, avatarurl) VALUES ($1, $2, $3, $4",
+        [profile?.id, fetchedUUID, username, profile?.avatar]
+      );
     } else {
       console.error(`Failed to fetch UUID for username: ${username}`);
     }
