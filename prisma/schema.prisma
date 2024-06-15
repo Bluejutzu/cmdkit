@@ -14,7 +14,7 @@ model User {
   discordName   String?
   minecraftName String?
   role          Role     @default(USER)
-  token         String
+  token         String?
   code          String?
 }
 
