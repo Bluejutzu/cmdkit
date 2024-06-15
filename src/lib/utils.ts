@@ -4,14 +4,11 @@ export function decodeBase64(base64: string): string {
   return Buffer.from(base64, "base64").toString("utf-8");
 }
 export async function generateCode(): Promise<string> {
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_`';
-  let result = "";
-  const charactersLength = characters.length;
-  for (let i = 0; i < 15; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
+  const min = 100000;
+  const max = 999999;
+  const code = Math.floor(Math.random() * (max - min + 1)) + min;
+  
+  return code.toString();
 }
 
 export async function getPlayerUUID(username: string): Promise<string | undefined> {

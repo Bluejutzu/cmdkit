@@ -1,9 +1,9 @@
 import Redis from 'ioredis';
 
-const redis = new Redis(); // Default connection to localhost:6379
+const redis = new Redis();
 
 export async function saveVerificationCode(code: string, data: any, expiration: number = 300): Promise<void> {
-  await redis.set(code, JSON.stringify(data), 'EX', expiration); // Set expiry time in seconds
+  await redis.set(code, JSON.stringify(data), 'EX', expiration);
 }
 
 export async function getVerificationData(code: string): Promise<any | null> {

@@ -12,15 +12,16 @@ export default async function verifyCommand(
   const userId = interaction.user.id;
 
   const user = await getUserByDiscordId(userId);
-  console.log(user)
+  console.log(user);
   if (!user) {
     await createUser(
       interaction.user.username,
       data.mcUsername,
       data.token,
-      userId
+      userId,
+      data.profile.id
     );
-
+    
     await interaction.reply(
       `Successfully verified! Discord ID ${interaction.user.id} is now linked with Minecraft username ${data.mcUsername}.`
     );
@@ -31,6 +32,5 @@ export default async function verifyCommand(
     interaction.reply(
       `You are already verified try running ${inlineCode("/mcAccount profile")}`
     );
-    
   }
 }
