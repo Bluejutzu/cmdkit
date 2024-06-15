@@ -93,9 +93,9 @@ export const run = async ({ interaction }: SlashCommandProps) => {
       [interaction.user.id]
     );
     if (result.rows.length > 0) {
-      const profile = main(
-        `${result.rows[0].minecraft_name}`
-      ) as unknown as ProfileInt;
+      const profile = await pool.query(
+        "SELECT * FROM users WHERE id = $1", [interaction.user.id]
+      )
 
       if (profile) {
         const embed = new EmbedBuilder()
