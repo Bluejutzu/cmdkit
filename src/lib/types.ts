@@ -31,9 +31,9 @@ interface User {
   createdAt: Date;
   discordName: string;
   minecraftName: string;
-  role: string;
   token: string;
   code: string;
+  avatar: string
 }
 
 export { ProfileInt, Response, User };

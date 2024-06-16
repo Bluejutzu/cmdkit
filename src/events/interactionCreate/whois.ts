@@ -2,9 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { decodeBase64 } from "../../lib/utils";
 import { ProfileInt, Response } from "../../lib/types";
 
-export default async function whoisCommand(
-  interaction: ChatInputCommandInteraction
-) {
+export default async function (interaction: ChatInputCommandInteraction) {
   const { commandName, options } = interaction;
   if (commandName !== "whois") return;
 

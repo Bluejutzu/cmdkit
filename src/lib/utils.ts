@@ -48,7 +48,7 @@ export function timeout(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function main(username: string | undefined) {
+export async function main(username: string | undefined): Promise<ProfileInt | undefined> {
   const startTime = new Date().getTime();
   let profile: ProfileInt | undefined = undefined;
 
@@ -73,11 +73,10 @@ export async function main(username: string | undefined) {
         const timeTaken = endTime - startTime;
         console.log(`Time taken: ${timeTaken} ms`);
         profile.timeTaken = timeTaken;
+
+      } else {
+        console.error(`Failed to fetch profile for ${username}`);
       }
-      await pool.query(
-        "INSERT INTO users (id, uuid, minecraft_name, avatarurl) VALUES ($1, $2, $3, $4",
-        [profile?.id, fetchedUUID, username, profile?.avatar]
-      );
     } else {
       console.error(`Failed to fetch UUID for username: ${username}`);
     }

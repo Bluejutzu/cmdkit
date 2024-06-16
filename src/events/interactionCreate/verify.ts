@@ -1,9 +1,7 @@
 import { ChatInputCommandInteraction, inlineCode } from "discord.js";
 import { verifyCode } from "../../db/utils";
 
-export default async function verifyCommand(
-  interaction: ChatInputCommandInteraction
-) {
+export default async function (interaction: ChatInputCommandInteraction) {
   const { commandName, options } = interaction;
   if (commandName !== "verify") return;
   const code = options.getString("code");

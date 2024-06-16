@@ -1,5 +1,5 @@
 import type { CommandData, SlashCommandProps } from "commandkit";
-import { getUserByDiscordId } from "../../db/utils";
+import { getUserByDiscordId, getUserProfile } from "../../db/utils";
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
@@ -70,54 +70,59 @@ export const run = async ({ interaction }: SlashCommandProps) => {
     }
   } else if (options.getSubcommand() === "me") {
     let roles: string;
-    await axios
-      .get(
-        `https://discord.com/api/v10//guilds/${interaction.guildId}/members/${interaction.user.id}`,
-        {
-          headers: {
-            Authorization: `Bot ${process.env.TOKEN}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-        roles = response.data.roles
-          .map((roleId: string) => `<@&${roleId}>`)
-          .join(", ");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    const result = await pool.query(
-      "SELECT minecraft_name FROM users WHERE id = $1",
-      [interaction.user.id]
-    );
-    if (result.rows.length > 0) {
-      const profile = await pool.query(
-        "SELECT * FROM users WHERE id = $1", [interaction.user.id]
-      )
-
-      if (profile) {
-        const embed = new EmbedBuilder()
-          .setTitle("Your Profile")
-          .addFields(
-            {
-              name: "Minecraft User",
-              value: `${profile.name}`,
+    let banner: string;
+    let format: string
+    try {
+      await axios
+        .get(
+          `https://discord.com/api/v10/guilds/${interaction.guildId}/members/${interaction.user.id}`,
+          {
+            headers: {
+              Authorization: `Bot ${process.env.TOKEN}`,
             },
-            {
-              name: "Roles",
-              value: `${roles!}`,
-            }
-          )
-          .setThumbnail(`${profile.avatar}`);
-        interaction.reply({ embeds: [embed], ephemeral: true });
-      } else {
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          roles = response.data.roles
+            .map((roleId: string) => `<@&${roleId}>`)
+            .join(", ");
+          banner = response.data.user.banner;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      const profile = await getUserByDiscordId(interaction.user.id);
+
+      if (!profile) {
         interaction.reply({
           content: "Failed to run command",
           ephemeral: true,
         });
+        return;
       }
+      const embed = new EmbedBuilder()
+        .setAuthor({
+          name: `${profile.discordName}`,
+          iconURL: `https://cdn.discordapp.com/avatars/953708302058012702/${interaction.user.avatar}.webp?size=1024&format=webp&width=0&height=281`,
+        })
+        .addFields(
+          {
+            name: "Minecraft User",
+            value: `${profile.minecraftName}`,
+          },
+          {
+            name: "Roles",
+            value: `${roles!}`,
+          }
+        )
+        .setThumbnail(`${profile.avatar}`)
+
+      interaction.reply({ embeds: [embed], ephemeral: true });
+    } catch (error) {
+      console.error(error);
+      await interaction.reply("Failed operation");
     }
   }
 };
