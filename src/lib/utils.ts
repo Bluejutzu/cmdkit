@@ -1,5 +1,8 @@
 import pool from "../db";
 import { ProfileInt, Response } from "./types";
+import { permissions } from "./permissions";
+import { SlashCommandProps } from "commandkit";
+import { ChatInputCommandInteraction } from "discord.js";
 
 export function decodeBase64(base64: string): string {
   return Buffer.from(base64, "base64").toString("utf-8");
@@ -48,7 +51,9 @@ export function timeout(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function main(username: string | undefined): Promise<ProfileInt | undefined> {
+export async function main(
+  username: string | undefined
+): Promise<ProfileInt | undefined> {
   const startTime = new Date().getTime();
   let profile: ProfileInt | undefined = undefined;
 
@@ -73,7 +78,6 @@ export async function main(username: string | undefined): Promise<ProfileInt | u
         const timeTaken = endTime - startTime;
         console.log(`Time taken: ${timeTaken} ms`);
         profile.timeTaken = timeTaken;
-
       } else {
         console.error(`Failed to fetch profile for ${username}`);
       }
@@ -83,4 +87,43 @@ export async function main(username: string | undefined): Promise<ProfileInt | u
   }
 
   return profile;
+}
+
+type Permissions = {
+  [key: string]: string;
+};
+export interface Interaction {
+  interaction: {
+    memberPermissions?: {
+      serialize(): { [key: string]: boolean };
+    };
+  };
+}
+
+export function checkperms(interaction: SlashCommandProps): void {
+  const memberPermissions =
+    interaction.interaction.memberPermissions?.serialize() as any;
+  if (!memberPermissions) {
+    console.log("Member has no permissions.");
+    return;
+  }
+
+  const normalizedPermissions: Permissions = Object.keys(permissions).reduce(
+    (acc, key) => {
+      acc[key] = permissions[key] as string;
+      return acc;
+    },
+    {} as Permissions
+  );
+
+  const memberHasPermissions = Object.keys(memberPermissions).filter(
+    (perm) => memberPermissions[perm]
+  );
+
+  console.log("Member Permissions:");
+  memberHasPermissions.forEach((perm) => {
+    if (normalizedPermissions[perm]) {
+      console.log(`${perm}: ${normalizedPermissions[perm]}`);
+    }
+  });
 }

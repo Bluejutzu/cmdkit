@@ -8,9 +8,7 @@ import {
 } from "discord.js";
 import "dotenv";
 import axios from "axios";
-import { main } from "../../lib/utils";
-import pool from "../../db";
-import { ProfileInt } from "../../lib/types";
+import { Interaction, checkperms } from "../../lib/utils";
 
 export const data: CommandData = {
   name: "mc-profile",
@@ -70,8 +68,9 @@ export const run = async ({ interaction }: SlashCommandProps) => {
     }
   } else if (options.getSubcommand() === "me") {
     let roles: string;
+    let rolesAmount: number;
     let banner: string;
-    let format: string
+    let permissions: string;
     try {
       await axios
         .get(
@@ -83,10 +82,11 @@ export const run = async ({ interaction }: SlashCommandProps) => {
           }
         )
         .then((response) => {
-          console.log(response.data);
           roles = response.data.roles
             .map((roleId: string) => `<@&${roleId}>`)
             .join(", ");
+          rolesAmount = response.data.roles.length;
+          permissions = response.data.permissions;
           banner = response.data.user.banner;
         })
         .catch((error) => {
@@ -97,29 +97,33 @@ export const run = async ({ interaction }: SlashCommandProps) => {
 
       if (!profile) {
         interaction.reply({
-          content: "Failed to run command",
+          content: "No profile found",
           ephemeral: true,
         });
         return;
       }
+      if (!permissions!) {
+        permissions = "No permissions found for user.";
+      }
       const embed = new EmbedBuilder()
+        .setColor("Blurple")
         .setAuthor({
           name: `${profile.discordName}`,
           iconURL: `https://cdn.discordapp.com/avatars/953708302058012702/${interaction.user.avatar}.webp?size=1024&format=webp&width=0&height=281`,
         })
         .addFields(
-          {
-            name: "Minecraft User",
-            value: `${profile.minecraftName}`,
-          },
-          {
-            name: "Roles",
-            value: `${roles!}`,
-          }
+          { name: "Discord\nUsername", value: `${interaction.user}` },
+          { name: "Display", value: `${interaction.user.displayName}` },
+          { name: "Minecraft\nUsername", value: `${profile.minecraftName}` },
+          { name: "Username", value: `${profile.minecraftName}` },
+          { name: `Roles [${rolesAmount!}]`, value: `${roles!}` },
+          { name: "Server Permissions", value: `${permissions}` }
         )
-        .setThumbnail(`${profile.avatar}`)
+        .setThumbnail(`${profile.avatar}`);
 
       interaction.reply({ embeds: [embed], ephemeral: true });
+      const newInteraction = interaction as unknown as SlashCommandProps;
+      checkperms(newInteraction!);
     } catch (error) {
       console.error(error);
       await interaction.reply("Failed operation");
