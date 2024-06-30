@@ -22,6 +22,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@swc/core": "^1.6.3",
     "@types/pg": "^8.11.6",
     "@types/uuid": "^9.0.8"
   }
